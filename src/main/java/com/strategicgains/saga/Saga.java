@@ -1,11 +1,21 @@
 package com.strategicgains.saga;
 
-import static com.strategicgains.saga.event.SagaEventType.*;
+import static com.strategicgains.saga.event.SagaEventType.SAGA_COMPENSATED;
+import static com.strategicgains.saga.event.SagaEventType.SAGA_COMPENSATION_FAILED;
+import static com.strategicgains.saga.event.SagaEventType.SAGA_COMPENSATION_STARTED;
+import static com.strategicgains.saga.event.SagaEventType.SAGA_STARTED;
+import static com.strategicgains.saga.event.SagaEventType.STEP_COMPENSATED;
+import static com.strategicgains.saga.event.SagaEventType.STEP_COMPENSATION_FAILED;
+import static com.strategicgains.saga.event.SagaEventType.STEP_COMPENSATION_STARTED;
+import static com.strategicgains.saga.event.SagaEventType.STEP_COMPLETED;
+import static com.strategicgains.saga.event.SagaEventType.STEP_FAILED;
+import static com.strategicgains.saga.event.SagaEventType.STEP_STARTED;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.strategicgains.saga.builder.SagaBuilder;
 import com.strategicgains.saga.event.SagaErrorEvent;
 import com.strategicgains.saga.event.SagaEvent;
 import com.strategicgains.saga.event.SagaEventType;
@@ -17,10 +27,15 @@ import com.strategicgains.saga.event.SagaStepEvent;
  * all previous steps using compensation.
  */
 public class Saga
-	implements Observable<SagaEvent>
+implements Observable<SagaEvent>
 {
 	private List<SagaStep> steps = new ArrayList<>();
 	private List<Observer<SagaEvent>> observers;
+
+	public static final SagaBuilder builder()
+	{
+		return new SagaBuilder();
+	}
 
 	public Saga addStep(SagaStep step)
 	{
