@@ -28,6 +28,11 @@ public class Saga
 		return this;
 	}
 
+	public void execute()
+	{
+		execute(new SagaContext());
+	}
+
 	public void execute(SagaContext context)
 	{
 		List<SagaStep> executedSteps = new ArrayList<>();
@@ -47,6 +52,7 @@ public class Saga
 			notify(STEP_FAILED, this, step, e);
 			compensate(context, executedSteps);
 			notify(SAGA_COMPENSATED, this);
+			return;
 		}
 	}
 
