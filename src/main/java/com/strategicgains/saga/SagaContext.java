@@ -22,8 +22,13 @@ implements Observable<ContextEvent>
 		if (hasObservers())
 		{
 			if (before != null) notify(key, value, before);
-			notify(key, value);
+			else notify(key, value);
 		}
+	}
+
+	public void setValue(String namespace, String key, Object value)
+	{
+		setValue(of(namespace, key), value);
 	}
 
 	public Object getValue(String key)
@@ -34,6 +39,16 @@ implements Observable<ContextEvent>
 	public <T> T getValue(String key, Class<T> type)
 	{
 		return type.cast(values.get(key));
+	}
+
+	public Object getValue(String namespace, String key)
+	{
+		return getValue(of(namespace, key));
+	}
+
+	public <T> T getValue(String namespace, String key, Class<T> type)
+	{
+		return type.cast(getValue(of(namespace, key)));
 	}
 
 	@Override
@@ -65,5 +80,10 @@ implements Observable<ContextEvent>
 	private void notify(String key, Object value)
 	{
 		notify(new ContextCreatedEvent(key, value));
+	}
+
+	private String of(String namespace, String key)
+	{
+		return namespace + "." + key;
 	}
 }
