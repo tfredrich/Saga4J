@@ -6,13 +6,15 @@
 	<artifactId>Saga4J</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Saga4J</name>
-	<description>A simple Saga orchestration framework in Java to handle distributed transactions as multiple, compensatable steps.</description>
+	<description>A simple Saga orchestration framework in Java to handle
+		distributed transactions as multiple, compensatable steps.</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>net.minidev</groupId>
-			<artifactId>accessors-smart</artifactId>
-			<version>2.4.9</version>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.11.0</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>

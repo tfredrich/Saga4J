@@ -1,5 +1,6 @@
 package com.strategicgains.saga;
 
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ class SagaTest
 {
 	@Test
 	void shouldExecute()
+	throws SagaException
 	{
 		Saga saga = new Saga();
 		TestStep step = new TestStep();
@@ -20,6 +22,7 @@ class SagaTest
 
 	@Test
 	void shouldCompensate()
+	throws SagaException
 	{
 		Saga saga = new Saga();
 		TestStep step = new TestStep();
@@ -32,6 +35,7 @@ class SagaTest
 
 	@Test
 	void shouldExecuteMultiple()
+	throws SagaException
 	{
 		TestStep step1 = new TestStep();
 		TestStep step2 = new TestStep();
@@ -48,6 +52,7 @@ class SagaTest
 
 	@Test
 	void shouldCompensateMultiple()
+	throws SagaException
 	{
 		TestStep step1 = new TestStep();
 		TestStep step2 = new TestStep();
@@ -73,13 +78,22 @@ class SagaTest
 			.addStep(step2)
 			.addStep(step3);
 
-		saga.execute(new SagaContext());
-		assertTrue(step1.isExecuted());
-		assertTrue(step2.isExecuted());
-		assertTrue(!step3.isExecuted());
-		assertTrue(step1.isCompensated());
-		assertTrue(step2.isCompensated());
-		assertTrue(!step3.isCompensated());
+		try
+		{
+			saga.execute(new SagaContext());
+		}
+		catch (SagaException e)
+		{
+			assertTrue(step1.isExecuted());
+			assertTrue(step2.isExecuted());
+			assertTrue(!step3.isExecuted());
+			assertTrue(step1.isCompensated());
+			assertTrue(step2.isCompensated());
+			assertTrue(!step3.isCompensated());
+			return;
+		}
+
+		fail("Should have thrown a SagaException");
 	}
 
 	@Test
@@ -93,12 +107,21 @@ class SagaTest
 			.addStep(step2)
 			.addStep(step3);
 
-		saga.execute(new SagaContext());
-		assertTrue(step1.isExecuted());
-		assertTrue(step2.isExecuted());
-		assertTrue(!step3.isExecuted());
-		assertTrue(step1.isCompensated());
-		assertTrue(step2.isCompensated());
-		assertTrue(!step3.isCompensated());
+		try
+		{
+			saga.execute(new SagaContext());
+		}
+		catch (SagaException e)
+		{
+			assertTrue(step1.isExecuted());
+			assertTrue(step2.isExecuted());
+			assertTrue(!step3.isExecuted());
+			assertTrue(!step3.isCompensated());
+			assertTrue(step2.isCompensated());
+			assertTrue(step1.isCompensated());
+			return;
+		}
+
+		fail("Should have thrown a SagaException");
 	}
 }

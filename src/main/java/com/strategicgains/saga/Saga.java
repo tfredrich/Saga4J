@@ -44,11 +44,13 @@ implements Observable<SagaEvent>
 	}
 
 	public void execute()
+	throws SagaException
 	{
 		execute(new SagaContext());
 	}
 
 	public void execute(SagaContext context)
+	throws SagaException
 	{
 		List<SagaStep> executedSteps = new ArrayList<>();
 
@@ -67,21 +69,24 @@ implements Observable<SagaEvent>
 			notify(STEP_FAILED, this, step, e);
 			compensate(context, executedSteps);
 			notify(SAGA_COMPENSATED, this);
-			return;
+			throw new SagaException("Failed to execute Saga", e);
 		}
 	}
 
 	public void compensate(SagaContext context)
+	throws SagaException
 	{
 		compensate(context, steps);
 	}
 
 	protected void compensate(SagaContext context, List<SagaStep> executedSteps)
+	throws SagaException
 	{
 		notify(SAGA_COMPENSATION_STARTED, this);
 
 		List<SagaStep> reversed = new ArrayList<>(executedSteps);
 		Collections.reverse(reversed);
+		List<Exception> errors = new ArrayList<>();
 
 		for (SagaStep step : reversed) try
 		{
@@ -93,9 +98,14 @@ implements Observable<SagaEvent>
 		{
 			notify(STEP_COMPENSATION_FAILED, this, step, e);
 			notify(SAGA_COMPENSATION_FAILED, this, e);
+			errors.add(e);
+		}
+
+		if (!errors.isEmpty())
+		{
+			throw new SagaException("Failed to compensate Saga", errors);
 		}
 	}
-
 	@Override
 	public void addObserver(Observer<SagaEvent> observer)
 	{
