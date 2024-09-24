@@ -15,7 +15,7 @@ class SagaTest
 		TestStep step = new TestStep();
 		saga.addStep(step);
 
-		saga.execute();
+		saga.execute(new SagaContext());
 		assertTrue(step.isExecuted());
 		assertTrue(!step.isCompensated());
 	}
@@ -43,7 +43,7 @@ class SagaTest
 			.addStep(step1)
 			.addStep(step2);
 
-		saga.execute();
+		saga.execute(new SagaContext());
 		assertTrue(step1.isExecuted());
 		assertTrue(step2.isExecuted());
 		assertTrue(!step1.isCompensated());

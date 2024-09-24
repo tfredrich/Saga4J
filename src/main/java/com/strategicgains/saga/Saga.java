@@ -43,12 +43,6 @@ implements Observable<SagaEvent>
 		return this;
 	}
 
-	public void execute()
-	throws SagaException
-	{
-		execute(new SagaContext());
-	}
-
 	public void execute(SagaContext context)
 	throws SagaException
 	{
