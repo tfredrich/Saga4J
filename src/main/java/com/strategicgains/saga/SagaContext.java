@@ -12,8 +12,30 @@ import com.strategicgains.saga.event.ContextUpdatedEvent;
 public class SagaContext
 implements Observable<ContextEvent>
 {
+	private SagaContext parent;
 	private Map<String, Object> values = new HashMap<>();
 	private List<Observer<ContextEvent>> observers;
+
+	public SagaContext()
+	{
+		super();
+	}
+
+	public SagaContext(SagaContext context)
+	{
+		this();
+		this.parent = context;
+	}
+
+	public boolean hasParent()
+	{
+		return parent != null;
+	}
+
+	public SagaContext getParent()
+	{
+		return parent;
+	}
 
 	public void setValue(String key, Object value)
 	{
