@@ -88,7 +88,7 @@ class SagaTest
 			assertEquals(1, step2.getExecutionCount());
 			assertEquals(0, step3.getExecutionCount());
 			assertEquals(1, step1.getCompensatedCount());
-			assertEquals(0, step2.getCompensatedCount());
+			assertEquals(1, step2.getCompensatedCount());
 			assertEquals(0, step3.getCompensatedCount());
 			return;
 		}
@@ -123,7 +123,7 @@ class SagaTest
 			assertEquals(1, step0.getCompensatedCount());
 			assertEquals(1, step1.getCompensatedCount());
 			assertEquals(1, step2.getCompensatedCount());
-			assertEquals(0, step3.getCompensatedCount());
+			assertEquals(1, step3.getCompensatedCount());
 			assertEquals(0, step4.getCompensatedCount());
 			return;
 		}
@@ -152,7 +152,7 @@ class SagaTest
 			assertEquals(1, step2.getExecutionCount());
 			assertEquals(0, step3.getExecutionCount());
 			assertEquals(0, step3.getCompensatedCount());
-			assertEquals(0, step2.getCompensatedCount());
+			assertEquals(1, step2.getCompensatedCount());
 			assertEquals(1, step1.getCompensatedCount());
 			return;
 		}

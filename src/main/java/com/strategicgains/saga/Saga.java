@@ -52,9 +52,10 @@ implements Observable<SagaEvent>
 
 		for (SagaStep step : steps) try
 		{
+			executedSteps.add(step);
+
 			notify(STEP_STARTED, this, step);
 			step.execute(context);
-			executedSteps.add(step);
 			notify(STEP_COMPLETED, this, step);
 		}
 		catch (Exception e)
