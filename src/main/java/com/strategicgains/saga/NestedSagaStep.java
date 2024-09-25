@@ -19,6 +19,7 @@ public class NestedSagaStep
 	private boolean isCompensated = false;
 	private boolean shouldCreateNewContext;
 	private final Saga nestedSaga;
+	private ThreadLocal<SagaContext> nestedContext = new ThreadLocal<>();
 
 	/**
 	 * Creates a new NestedSagaStep and resuses the parent saga's context.
@@ -49,20 +50,22 @@ public class NestedSagaStep
 	@Override
 	public void execute(SagaContext context) throws Exception
 	{
-		SagaContext nestedContext = context;
+		SagaContext localContext = context;
 
 		if (shouldCreateNewContext)
 		{
-			nestedContext = new SagaContext(context);
+			localContext = new SagaContext(context);
+			nestedContext.set(localContext);
 		}
 
 		try
 		{
-			nestedSaga.execute(nestedContext);
+			nestedSaga.execute(localContext);
 		}
 		catch (Exception e)
 		{
 			isCompensated = true;
+			nestedContext.remove();
 			throw e;
 		}
 	}
@@ -75,14 +78,22 @@ public class NestedSagaStep
      * On the other hand, the parent saga can also compensate due to a subsequent step failure. In this
      * case, the nested saga should also be compensated.
      * 
-     * @param context the parent saga context. Note that context created during execution of the nested saga is not available.
+     * @param context the parent saga context. Ignored if a new context was created for the nested saga during execution.
      */
 	@Override
 	public void compensate(SagaContext context) throws Exception
 	{
 		if (!isCompensated)
 		{
-			nestedSaga.compensate(context);
+			SagaContext localContext = nestedContext.get();
+            nestedContext.remove();
+
+			if (localContext == null)
+			{
+				localContext = context;
+			}
+
+			nestedSaga.compensate(localContext);
 			isCompensated = true;
 		}
 	}
