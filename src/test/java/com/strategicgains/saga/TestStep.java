@@ -3,28 +3,28 @@ package com.strategicgains.saga;
 public class TestStep
 implements SagaStep
 {
-	private boolean isExecuted = false;
-	private boolean isCompensated = false;
+	private int executed = 0;
+	private int compensated = 0;
 
 	@Override
 	public void execute(SagaContext context) throws Exception
 	{
-		this.isExecuted = true;
+		++executed;
 	}
 
 	@Override
 	public void compensate(SagaContext context) throws Exception
 	{
-		this.isCompensated = true;
+		++compensated;
 	}
 
-	public boolean isExecuted()
+	public int getExecutionCount()
 	{
-		return isExecuted;
+		return executed;
 	}
 
-	public boolean isCompensated()
+	public int getCompensatedCount()
 	{
-		return isCompensated;
+		return compensated;
 	}
 }

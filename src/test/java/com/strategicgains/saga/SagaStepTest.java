@@ -1,7 +1,6 @@
 package com.strategicgains.saga;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
@@ -12,8 +11,8 @@ class SagaStepTest
 	{
 		TestStep step = new TestStep();
 		step.execute(new SagaContext());
-		assertTrue(step.isExecuted());
-		assertFalse(step.isCompensated());
+		assertEquals(1, step.getExecutionCount());
+		assertEquals(0, step.getCompensatedCount());
 	}
 
 	@Test
@@ -21,7 +20,7 @@ class SagaStepTest
 	{
 		TestStep step = new TestStep();
 		step.compensate(new SagaContext());
-		assertFalse(step.isExecuted());
-		assertTrue(step.isCompensated());
+		assertEquals(0, step.getExecutionCount());
+		assertEquals(1, step.getCompensatedCount());
 	}
 }

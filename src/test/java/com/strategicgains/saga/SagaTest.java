@@ -1,7 +1,7 @@
 package com.strategicgains.saga;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,8 +16,8 @@ class SagaTest
 		saga.addStep(step);
 
 		saga.execute(new SagaContext());
-		assertTrue(step.isExecuted());
-		assertTrue(!step.isCompensated());
+		assertEquals(1, step.getExecutionCount());
+		assertEquals(0, step.getCompensatedCount());
 	}
 
 	@Test
@@ -29,8 +29,8 @@ class SagaTest
 		saga.addStep(step);
 
 		saga.compensate(new SagaContext());
-		assertTrue(!step.isExecuted());
-		assertTrue(step.isCompensated());
+		assertEquals(0, step.getExecutionCount());
+		assertEquals(1, step.getCompensatedCount());
 	}
 
 	@Test
@@ -44,10 +44,10 @@ class SagaTest
 			.addStep(step2);
 
 		saga.execute(new SagaContext());
-		assertTrue(step1.isExecuted());
-		assertTrue(step2.isExecuted());
-		assertTrue(!step1.isCompensated());
-		assertTrue(!step2.isCompensated());
+		assertEquals(1, step1.getExecutionCount());
+		assertEquals(1, step2.getExecutionCount());
+		assertEquals(0, step1.getCompensatedCount());
+		assertEquals(0, step2.getCompensatedCount());
 	}
 
 	@Test
@@ -61,10 +61,10 @@ class SagaTest
 			.addStep(step2);
 
 		saga.compensate(new SagaContext());
-		assertTrue(!step1.isExecuted());
-		assertTrue(!step2.isExecuted());
-		assertTrue(step1.isCompensated());
-		assertTrue(step2.isCompensated());
+		assertEquals(0, step1.getExecutionCount());
+		assertEquals(0, step2.getExecutionCount());
+		assertEquals(1, step1.getCompensatedCount());
+		assertEquals(1, step2.getCompensatedCount());
 	}
 
 	@Test
@@ -84,12 +84,47 @@ class SagaTest
 		}
 		catch (SagaException e)
 		{
-			assertTrue(step1.isExecuted());
-			assertTrue(step2.isExecuted());
-			assertTrue(!step3.isExecuted());
-			assertTrue(step1.isCompensated());
-			assertTrue(step2.isCompensated());
-			assertTrue(!step3.isCompensated());
+			assertEquals(1, step1.getExecutionCount());
+			assertEquals(1, step2.getExecutionCount());
+			assertEquals(0, step3.getExecutionCount());
+			assertEquals(1, step1.getCompensatedCount());
+			assertEquals(0, step2.getCompensatedCount());
+			assertEquals(0, step3.getCompensatedCount());
+			return;
+		}
+
+		fail("Should have thrown a SagaException");
+	}
+
+	@Test
+	void shouldCompensateNested()
+	{
+		TestStep step0 = new TestStep();
+		TestStep step1 = new TestStep();
+		TestStep step2 = new TestStep();
+		TestStep step3 = new ErrorStep();
+		TestStep step4 = new TestStep();
+		Saga saga = Saga.builder()
+			.step(step0)
+			.nestedSaga(nested -> nested.step(step1).step(step2).step(step3))
+			.step(step4)
+			.build();
+		try
+		{
+			saga.execute(new SagaContext());
+		}
+		catch (SagaException e)
+		{
+			assertEquals(1, step0.getExecutionCount());
+			assertEquals(1, step1.getExecutionCount());
+			assertEquals(1, step2.getExecutionCount());
+			assertEquals(1, step3.getExecutionCount());
+			assertEquals(0, step4.getExecutionCount());
+			assertEquals(1, step0.getCompensatedCount());
+			assertEquals(1, step1.getCompensatedCount());
+			assertEquals(1, step2.getCompensatedCount());
+			assertEquals(0, step3.getCompensatedCount());
+			assertEquals(0, step4.getCompensatedCount());
 			return;
 		}
 
@@ -113,12 +148,12 @@ class SagaTest
 		}
 		catch (SagaException e)
 		{
-			assertTrue(step1.isExecuted());
-			assertTrue(step2.isExecuted());
-			assertTrue(!step3.isExecuted());
-			assertTrue(!step3.isCompensated());
-			assertTrue(step2.isCompensated());
-			assertTrue(step1.isCompensated());
+			assertEquals(1, step1.getExecutionCount());
+			assertEquals(1, step2.getExecutionCount());
+			assertEquals(0, step3.getExecutionCount());
+			assertEquals(0, step3.getCompensatedCount());
+			assertEquals(0, step2.getCompensatedCount());
+			assertEquals(1, step1.getCompensatedCount());
 			return;
 		}
 

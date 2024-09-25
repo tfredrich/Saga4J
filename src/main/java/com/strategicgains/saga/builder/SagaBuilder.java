@@ -54,6 +54,14 @@ public class SagaBuilder
 
 	public Saga build()
 	{
-		return new Saga();
+		Saga saga = new Saga();
+        steps.forEach(saga::addStep);
+
+        if (observers != null)
+		{
+			observers.forEach(saga::addObserver);
+		}
+
+        return saga;
 	}
 }
