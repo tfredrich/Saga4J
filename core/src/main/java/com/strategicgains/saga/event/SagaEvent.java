@@ -5,11 +5,11 @@ import com.strategicgains.saga.Saga;
 
 public class SagaEvent
 {
-	private SagaEventType type;
+	private Type type;
 	private Saga saga;
 	private ExecutionContext context;
 
-	public SagaEvent(SagaEventType type, Saga saga, ExecutionContext context)
+	public SagaEvent(Type type, Saga saga, ExecutionContext context)
 	{
 		super();
 		this.saga = saga;
@@ -17,7 +17,7 @@ public class SagaEvent
 		this.context = context;
 	}
 
-	public SagaEventType getType()
+	public Type getType()
 	{
 		return type;
 	}
@@ -30,5 +30,22 @@ public class SagaEvent
 	public ExecutionContext getContext()
 	{
 		return context;
+	}
+
+	public enum Type
+	{
+		SAGA_STARTED,
+		SAGA_FAILED,
+		SAGA_COMPENSATION_STARTED,
+		SAGA_COMPENSATION_FAILED,
+		SAGA_COMPENSATED,
+		SAGA_COMPLETED,
+
+		STEP_STARTED,
+		STEP_COMPLETED,
+		STEP_FAILED,
+		STEP_COMPENSATION_STARTED,
+		STEP_COMPENSATED,
+		STEP_COMPENSATION_FAILED
 	}
 }

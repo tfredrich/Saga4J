@@ -10,7 +10,6 @@ import com.strategicgains.saga.event.ContextEvent;
 import com.strategicgains.saga.event.ContextUpdatedEvent;
 
 public class ExecutionContext
-implements Observable<ContextEvent>
 {
 	private ExecutionContext parent;
 	private Map<String, Object> values = new HashMap<>();
@@ -73,8 +72,7 @@ implements Observable<ContextEvent>
 		return type.cast(getValue(of(namespace, key)));
 	}
 
-	@Override
-	public void addObserver(Observer<ContextEvent> observer)
+	public ExecutionContext addObserver(Observer<ContextEvent> observer)
 	{
 		if (observers == null)
 		{
@@ -82,6 +80,7 @@ implements Observable<ContextEvent>
 		}
 
 		observers.add(observer);
+		return this;
 	}
 
 	private boolean hasObservers()

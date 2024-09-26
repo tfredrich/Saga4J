@@ -9,7 +9,7 @@ extends SagaEvent
 {
 	private Step step;
 
-	public StepEvent(SagaEventType type, Saga saga, Step step, ExecutionContext context)
+	public StepEvent(Type type, Saga saga, Step step, ExecutionContext context)
 	{
 		super(type, saga, context);
 		this.step = step;

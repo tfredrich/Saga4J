@@ -3,11 +3,11 @@ package com.strategicgains.saga;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
 import com.strategicgains.saga.event.ContextEvent;
-import com.strategicgains.saga.event.ContextEventType;
 import com.strategicgains.saga.event.ContextUpdatedEvent;
 
 class ExecutionContextTest
@@ -42,48 +42,28 @@ class ExecutionContextTest
 	void shouldNotifyObservers()
 	{
 		ExecutionContext context = new ExecutionContext();
-		TestObserver observer = new TestObserver();
-		context.addObserver(observer);
+		context.addObserver(event ->
+		{
+			if (event.getType() == ContextEvent.Type.CONTEXT_CREATED)
+			{
+				assertEquals("key", event.getKey());
+				assertEquals("value", event.getValue());
+				assertEquals("value", event.getValue(String.class));
+				return;
+			}
+			else if (event.getType() == ContextEvent.Type.CONTEXT_UPDATED)
+			{
+				assertEquals("key", event.getKey());
+				assertEquals("value2", event.getValue());
+				assertEquals("value2", event.getValue(String.class));
+				assertEquals("value", ((ContextUpdatedEvent) event).getBefore());
+				assertEquals("value", ((ContextUpdatedEvent) event).getBefore(String.class));
+				return;
+			}
+
+			fail("Unexpected event type: " + event.getType());
+		});
 		context.setValue("key", "value");
-		assertTrue(observer.isNotified());
-
-		ContextEvent ce = observer.getEvent();
-		assertEquals(ContextEventType.CONTEXT_CREATED, ce.getType());
-		assertEquals("key", ce.getKey());
-		assertEquals("value", ce.getValue());
-		assertEquals("value", ce.getValue(String.class));
-
 		context.setValue("key", "value2");
-		assertTrue(observer.isNotified());
-		ce = observer.getEvent();
-		assertEquals(ContextEventType.CONTEXT_UPDATED, ce.getType());
-		ContextUpdatedEvent ce2 = (ContextUpdatedEvent) observer.getEvent();
-		assertEquals("key", ce2.getKey());
-		assertEquals("value2", ce2.getValue());
-		assertEquals("value2", ce2.getValue(String.class));
-		assertEquals("value", ce2.getBefore());
-		assertEquals("value", ce2.getBefore(String.class));
 	}
-
-	public class TestObserver
-	implements Observer<ContextEvent>
-	{
-		private ContextEvent event;
-
-		@Override
-		public void onEvent(ContextEvent event)
-		{
-			this.event = event;
-		}
-
-		public boolean isNotified()
-		{
-			return event != null;
-		}
-
-		public ContextEvent getEvent()
-		{
-			return event;
-		}
-	};
 }

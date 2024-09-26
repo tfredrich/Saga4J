@@ -1,15 +1,15 @@
 package com.strategicgains.saga;
 
-import static com.strategicgains.saga.event.SagaEventType.SAGA_COMPENSATED;
-import static com.strategicgains.saga.event.SagaEventType.SAGA_COMPENSATION_FAILED;
-import static com.strategicgains.saga.event.SagaEventType.SAGA_COMPENSATION_STARTED;
-import static com.strategicgains.saga.event.SagaEventType.SAGA_STARTED;
-import static com.strategicgains.saga.event.SagaEventType.STEP_COMPENSATED;
-import static com.strategicgains.saga.event.SagaEventType.STEP_COMPENSATION_FAILED;
-import static com.strategicgains.saga.event.SagaEventType.STEP_COMPENSATION_STARTED;
-import static com.strategicgains.saga.event.SagaEventType.STEP_COMPLETED;
-import static com.strategicgains.saga.event.SagaEventType.STEP_FAILED;
-import static com.strategicgains.saga.event.SagaEventType.STEP_STARTED;
+import static com.strategicgains.saga.event.SagaEvent.Type.SAGA_COMPENSATED;
+import static com.strategicgains.saga.event.SagaEvent.Type.SAGA_COMPENSATION_FAILED;
+import static com.strategicgains.saga.event.SagaEvent.Type.SAGA_COMPENSATION_STARTED;
+import static com.strategicgains.saga.event.SagaEvent.Type.SAGA_STARTED;
+import static com.strategicgains.saga.event.SagaEvent.Type.STEP_COMPENSATED;
+import static com.strategicgains.saga.event.SagaEvent.Type.STEP_COMPENSATION_FAILED;
+import static com.strategicgains.saga.event.SagaEvent.Type.STEP_COMPENSATION_STARTED;
+import static com.strategicgains.saga.event.SagaEvent.Type.STEP_COMPLETED;
+import static com.strategicgains.saga.event.SagaEvent.Type.STEP_FAILED;
+import static com.strategicgains.saga.event.SagaEvent.Type.STEP_STARTED;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,7 +18,6 @@ import java.util.List;
 import com.strategicgains.saga.builder.SagaBuilder;
 import com.strategicgains.saga.event.SagaErrorEvent;
 import com.strategicgains.saga.event.SagaEvent;
-import com.strategicgains.saga.event.SagaEventType;
 import com.strategicgains.saga.event.StepErrorEvent;
 import com.strategicgains.saga.event.StepEvent;
 
@@ -27,7 +26,6 @@ import com.strategicgains.saga.event.StepEvent;
  * all previous steps using compensation.
  */
 public class Saga
-implements Observable<SagaEvent>
 {
 	private List<Step> steps = new ArrayList<>();
 	private List<Observer<SagaEvent>> observers;
@@ -104,7 +102,6 @@ implements Observable<SagaEvent>
 		}
 	}
 
-	@Override
 	public void addObserver(Observer<SagaEvent> observer)
 	{
 		if (observers == null)
@@ -130,22 +127,22 @@ implements Observable<SagaEvent>
 		observers.forEach(observer -> observer.onEvent(event));
 	}
 
-	private void notify(SagaEventType type, Saga saga, Step step, ExecutionContext context, Exception e)
+	private void notify(SagaEvent.Type type, Saga saga, Step step, ExecutionContext context, Exception e)
 	{
 		if (hasObservers()) notify(new StepErrorEvent(type, saga, step, context, e));		
 	}
 
-	private void notify(SagaEventType type, Saga saga, Step step, ExecutionContext context)
+	private void notify(SagaEvent.Type type, Saga saga, Step step, ExecutionContext context)
 	{
 		if (hasObservers()) notify(new StepEvent(type, saga, step, context));
 	}
 
-	private void notify(SagaEventType type, Saga saga, ExecutionContext context)
+	private void notify(SagaEvent.Type type, Saga saga, ExecutionContext context)
 	{
 		if (hasObservers()) notify(new SagaEvent(type, saga, context));
 	}
 
-	private void notify(SagaEventType type, Saga saga, ExecutionContext context, Exception e)
+	private void notify(SagaEvent.Type type, Saga saga, ExecutionContext context, Exception e)
 	{
 		if (hasObservers()) notify(new SagaErrorEvent(type, saga, context, e));
 	}

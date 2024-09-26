@@ -8,7 +8,7 @@ extends SagaEvent
 {
 	private Exception e;
 
-	public SagaErrorEvent(SagaEventType type, Saga saga, ExecutionContext context, Exception exception)
+	public SagaErrorEvent(Type type, Saga saga, ExecutionContext context, Exception exception)
 	{
 		super(type, saga, context);
 		this.e = exception;

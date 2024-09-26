@@ -9,7 +9,7 @@ extends StepEvent
 {
 	private Exception e;
 
-	public StepErrorEvent(SagaEventType type, Saga saga, Step step, ExecutionContext context, Exception exception)
+	public StepErrorEvent(Type type, Saga saga, Step step, ExecutionContext context, Exception exception)
 	{
 		super(type, saga, step, context);
 		this.e = exception;
