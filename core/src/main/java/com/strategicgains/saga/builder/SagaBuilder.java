@@ -21,13 +21,6 @@ public class SagaBuilder
 		return this;
 	}
 
-	public SagaBuilder step(Consumer<StepBuilder> stepBuilder)
-	{
-		StepBuilder builder = new StepBuilder();
-		stepBuilder.accept(builder);
-		return step(builder.build());
-	}
-
 	public SagaBuilder observer(Observer<SagaEvent> observer)
 	{
 		if (observers == null)
