@@ -1,6 +1,7 @@
 package com.strategicgains.saga;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -14,13 +15,27 @@ class SagaContextTest
 	@Test
 	void shouldSetValues()
 	{
-		SagaContext context = new SagaContext();
+		SagaContext grandParent = new SagaContext();
+		SagaContext parent = new SagaContext(grandParent);
+		parent.setValue("key", "parent");
+		parent.setValue("namespace", "key", "parent2");
+
+		SagaContext context = new SagaContext(parent);
 		context.setValue("key", "value");
 		assertEquals("value", context.getValue("key"));
 		assertEquals("value", context.getValue("key", String.class));
-		context.setValue("namespace", "key", "value");
-		assertEquals("value", context.getValue("namespace", "key"));
-		assertEquals("value", context.getValue("namespace", "key", String.class));
+		context.setValue("namespace", "key", "value2");
+		assertEquals("value2", context.getValue("namespace", "key"));
+		assertEquals("value2", context.getValue("namespace", "key", String.class));
+
+		parent = context.getParent();
+		assertNotNull(parent);
+		assertEquals("parent", parent.getValue("key"));
+		assertEquals("parent", parent.getValue("key", String.class));
+		assertEquals("parent2", parent.getValue("namespace", "key"));
+		assertEquals("parent2", parent.getValue("namespace", "key", String.class));
+
+		assertNotNull(parent.getParent());
 	}
 
 	@Test
