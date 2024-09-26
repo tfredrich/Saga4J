@@ -23,4 +23,13 @@ class SagaStepTest
 		assertEquals(0, step.getExecutionCount());
 		assertEquals(1, step.getCompensatedCount());
 	}
+
+	@Test
+	void shouldPerformConsumer() throws Exception
+	{
+		ConsumerStep step = new ConsumerStep(c -> c.setValue("key", "value"));
+		SagaContext context = new SagaContext();
+		step.execute(context);
+		assertEquals("value", context.getValue("key"));
+	}
 }
