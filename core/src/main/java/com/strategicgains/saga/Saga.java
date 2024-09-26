@@ -27,7 +27,7 @@ import com.strategicgains.saga.event.SagaStepEvent;
  * all previous steps using compensation.
  */
 public class Saga
-implements Observable<SagaEvent>
+implements Observable<SagaEvent>, Compensatable<SagaContext>
 {
 	private List<SagaStep> steps = new ArrayList<>();
 	private List<Observer<SagaEvent>> observers;
@@ -67,6 +67,7 @@ implements Observable<SagaEvent>
 		}
 	}
 
+	@Override
 	public void compensate(SagaContext context)
 	throws SagaException
 	{
@@ -84,9 +85,12 @@ implements Observable<SagaEvent>
 
 		for (SagaStep step : reversed) try
 		{
-			notify(STEP_COMPENSATION_STARTED, this, step);
-			step.compensate(context);
-			notify(STEP_COMPENSATED, this, step);
+			if (isCompensatable(step))
+			{
+				notify(STEP_COMPENSATION_STARTED, this, step);
+				((CompensatableStep) step).compensate(context);
+				notify(STEP_COMPENSATED, this, step);
+			}
 		}
 		catch (Exception e)
 		{
@@ -100,6 +104,11 @@ implements Observable<SagaEvent>
 			throw new SagaException("Failed to compensate Saga", errors);
 		}
 	}
+	private boolean isCompensatable(SagaStep step)
+	{
+		return step instanceof CompensatableStep;
+	}
+
 	@Override
 	public void addObserver(Observer<SagaEvent> observer)
 	{

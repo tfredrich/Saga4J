@@ -1,7 +1,7 @@
 package com.strategicgains.saga;
 
 public class TestStep
-implements SagaStep
+implements CompensatableStep
 {
 	private int executed = 0;
 	private int compensated = 0;

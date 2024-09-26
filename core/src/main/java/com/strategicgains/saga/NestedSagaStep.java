@@ -14,7 +14,7 @@ package com.strategicgains.saga;
  * - The nested saga should have its own SagaContext (default is to NOT create a new context).
  */
 public class NestedSagaStep
-	implements SagaStep
+implements CompensatableStep
 {
 	private boolean isCompensated = false;
 	private boolean shouldCreateNewContext;
