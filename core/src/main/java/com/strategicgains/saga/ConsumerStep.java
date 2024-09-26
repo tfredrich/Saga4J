@@ -3,20 +3,20 @@ package com.strategicgains.saga;
 import java.util.function.Consumer;
 
 /**
- * A SagaStep (non-compensatable) that executes a Consumer function.
+ * A Step (non-compensatable) that executes a Consumer function.
  */
 public class ConsumerStep
-implements SagaStep
+implements Step
 {
-	private Consumer<SagaContext> consumer;
+	private Consumer<ExecutionContext> consumer;
 
-	public ConsumerStep(Consumer<SagaContext> consumer)
+	public ConsumerStep(Consumer<ExecutionContext> consumer)
 	{
 		this.consumer = consumer;
 	}
 
 	@Override
-	public void execute(SagaContext context) throws Exception
+	public void execute(ExecutionContext context) throws Exception
 	{
 		consumer.accept(context);
 	}

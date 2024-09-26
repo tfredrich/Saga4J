@@ -10,17 +10,17 @@ import com.strategicgains.saga.event.ContextEvent;
 import com.strategicgains.saga.event.ContextEventType;
 import com.strategicgains.saga.event.ContextUpdatedEvent;
 
-class SagaContextTest
+class ExecutionContextTest
 {
 	@Test
 	void shouldSetValues()
 	{
-		SagaContext grandParent = new SagaContext();
-		SagaContext parent = new SagaContext(grandParent);
+		ExecutionContext grandParent = new ExecutionContext();
+		ExecutionContext parent = new ExecutionContext(grandParent);
 		parent.setValue("key", "parent");
 		parent.setValue("namespace", "key", "parent2");
 
-		SagaContext context = new SagaContext(parent);
+		ExecutionContext context = new ExecutionContext(parent);
 		context.setValue("key", "value");
 		assertEquals("value", context.getValue("key"));
 		assertEquals("value", context.getValue("key", String.class));
@@ -41,7 +41,7 @@ class SagaContextTest
 	@Test
 	void shouldNotifyObservers()
 	{
-		SagaContext context = new SagaContext();
+		ExecutionContext context = new ExecutionContext();
 		TestObserver observer = new TestObserver();
 		context.addObserver(observer);
 		context.setValue("key", "value");

@@ -4,8 +4,8 @@ package com.strategicgains.saga;
  * A CompensatableStep is a step in a Saga that is compensated if the saga fails.
  */
 public interface CompensatableStep
-extends SagaStep
+extends Step
 {
-	void compensate(SagaContext context)
+	void compensate(ExecutionContext context)
 	throws Exception;
 }

@@ -4,13 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-class SagaStepTest
+class StepTest
 {
 	@Test
 	void shouldExecute() throws Exception
 	{
 		TestStep step = new TestStep();
-		step.execute(new SagaContext());
+		step.execute(new ExecutionContext());
 		assertEquals(1, step.getExecutionCount());
 		assertEquals(0, step.getCompensatedCount());
 	}
@@ -19,7 +19,7 @@ class SagaStepTest
 	void shouldCompensate() throws Exception
 	{
 		TestStep step = new TestStep();
-		step.compensate(new SagaContext());
+		step.compensate(new ExecutionContext());
 		assertEquals(0, step.getExecutionCount());
 		assertEquals(1, step.getCompensatedCount());
 	}
@@ -28,7 +28,7 @@ class SagaStepTest
 	void shouldPerformConsumer() throws Exception
 	{
 		ConsumerStep step = new ConsumerStep(c -> c.setValue("key", "value"));
-		SagaContext context = new SagaContext();
+		ExecutionContext context = new ExecutionContext();
 		step.execute(context);
 		assertEquals("value", context.getValue("key"));
 	}

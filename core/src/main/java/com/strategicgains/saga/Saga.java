@@ -19,8 +19,8 @@ import com.strategicgains.saga.builder.SagaBuilder;
 import com.strategicgains.saga.event.SagaErrorEvent;
 import com.strategicgains.saga.event.SagaEvent;
 import com.strategicgains.saga.event.SagaEventType;
-import com.strategicgains.saga.event.SagaStepErrorEvent;
-import com.strategicgains.saga.event.SagaStepEvent;
+import com.strategicgains.saga.event.StepErrorEvent;
+import com.strategicgains.saga.event.StepEvent;
 
 /**
  * A Saga is a sequence of steps that must be executed in order. If any step fails, the Saga will attempt to rollback
@@ -29,7 +29,7 @@ import com.strategicgains.saga.event.SagaStepEvent;
 public class Saga
 implements Observable<SagaEvent>
 {
-	private List<SagaStep> steps = new ArrayList<>();
+	private List<Step> steps = new ArrayList<>();
 	private List<Observer<SagaEvent>> observers;
 
 	public static final SagaBuilder builder()
@@ -37,64 +37,64 @@ implements Observable<SagaEvent>
 		return new SagaBuilder();
 	}
 
-	public Saga addStep(SagaStep step)
+	public Saga addStep(Step step)
 	{
 		steps.add(step);
 		return this;
 	}
 
-	public void execute(SagaContext context)
+	public void execute(ExecutionContext context)
 	throws SagaException
 	{
-		List<SagaStep> executedSteps = new ArrayList<>();
+		List<Step> executedSteps = new ArrayList<>();
 
-		notify(SAGA_STARTED, this);
+		notify(SAGA_STARTED, this, context);
 
-		for (SagaStep step : steps) try
+		for (Step step : steps) try
 		{
 			executedSteps.add(step);
 
-			notify(STEP_STARTED, this, step);
+			notify(STEP_STARTED, this, step, context);
 			step.execute(context);
-			notify(STEP_COMPLETED, this, step);
+			notify(STEP_COMPLETED, this, step, context);
 		}
 		catch (Exception e)
 		{
-			notify(STEP_FAILED, this, step, e);
+			notify(STEP_FAILED, this, step, context, e);
 			compensate(context, executedSteps);
-			notify(SAGA_COMPENSATED, this);
+			notify(SAGA_COMPENSATED, this, context);
 			throw new SagaException("Failed to execute Saga", e);
 		}
 	}
 
-	public void compensate(SagaContext context)
+	public void compensate(ExecutionContext context)
 	throws SagaException
 	{
 		compensate(context, steps);
 	}
 
-	protected void compensate(SagaContext context, List<SagaStep> executedSteps)
+	protected void compensate(ExecutionContext context, List<Step> executedSteps)
 	throws SagaException
 	{
-		notify(SAGA_COMPENSATION_STARTED, this);
+		notify(SAGA_COMPENSATION_STARTED, this, context);
 
-		List<SagaStep> reversed = new ArrayList<>(executedSteps);
+		List<Step> reversed = new ArrayList<>(executedSteps);
 		Collections.reverse(reversed);
 		List<Exception> errors = new ArrayList<>();
 
-		for (SagaStep step : reversed) try
+		for (Step step : reversed) try
 		{
 			if (isCompensatable(step))
 			{
-				notify(STEP_COMPENSATION_STARTED, this, step);
+				notify(STEP_COMPENSATION_STARTED, this, step, context);
 				((CompensatableStep) step).compensate(context);
-				notify(STEP_COMPENSATED, this, step);
+				notify(STEP_COMPENSATED, this, step, context);
 			}
 		}
 		catch (Exception e)
 		{
-			notify(STEP_COMPENSATION_FAILED, this, step, e);
-			notify(SAGA_COMPENSATION_FAILED, this, e);
+			notify(STEP_COMPENSATION_FAILED, this, step, context, e);
+			notify(SAGA_COMPENSATION_FAILED, this, context, e);
 			errors.add(e);
 		}
 
@@ -115,7 +115,7 @@ implements Observable<SagaEvent>
 		observers.add(observer);
 	}
 
-	private boolean isCompensatable(SagaStep step)
+	private boolean isCompensatable(Step step)
 	{
 		return step instanceof CompensatableStep;
 	}
@@ -130,23 +130,23 @@ implements Observable<SagaEvent>
 		observers.forEach(observer -> observer.onEvent(event));
 	}
 
-	private void notify(SagaEventType type, Saga saga, SagaStep step, Exception e)
+	private void notify(SagaEventType type, Saga saga, Step step, ExecutionContext context, Exception e)
 	{
-		if (hasObservers()) notify(new SagaStepErrorEvent(type, saga, step, e));		
+		if (hasObservers()) notify(new StepErrorEvent(type, saga, step, context, e));		
 	}
 
-	private void notify(SagaEventType type, Saga saga, SagaStep step)
+	private void notify(SagaEventType type, Saga saga, Step step, ExecutionContext context)
 	{
-		if (hasObservers()) notify(new SagaStepEvent(type, saga, step));
+		if (hasObservers()) notify(new StepEvent(type, saga, step, context));
 	}
 
-	private void notify(SagaEventType type, Saga saga)
+	private void notify(SagaEventType type, Saga saga, ExecutionContext context)
 	{
-		if (hasObservers()) notify(new SagaEvent(type, saga));
+		if (hasObservers()) notify(new SagaEvent(type, saga, context));
 	}
 
-	private void notify(SagaEventType type, Saga saga, Exception e)
+	private void notify(SagaEventType type, Saga saga, ExecutionContext context, Exception e)
 	{
-		if (hasObservers()) notify(new SagaErrorEvent(type, saga, e));
+		if (hasObservers()) notify(new SagaErrorEvent(type, saga, context, e));
 	}
 }

@@ -7,15 +7,15 @@ import java.util.function.Consumer;
 import com.strategicgains.saga.NestedSagaStep;
 import com.strategicgains.saga.Observer;
 import com.strategicgains.saga.Saga;
-import com.strategicgains.saga.SagaStep;
+import com.strategicgains.saga.Step;
 import com.strategicgains.saga.event.SagaEvent;
 
 public class SagaBuilder
 {
-	private List<SagaStep> steps = new ArrayList<>();
+	private List<Step> steps = new ArrayList<>();
 	private List<Observer<SagaEvent>> observers;
 
-	public SagaBuilder step(SagaStep step)
+	public SagaBuilder step(Step step)
 	{
 		steps.add(step);
 		return this;
