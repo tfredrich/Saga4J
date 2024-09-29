@@ -8,7 +8,7 @@
 
 	<parent>
 		<groupId>com.strategicgains</groupId>
-		<artifactId>schema4j-parent</artifactId>
+		<artifactId>saga4j-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 </project>
