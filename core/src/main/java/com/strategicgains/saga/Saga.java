@@ -30,17 +30,35 @@ public class Saga
 	private List<Step> steps = new ArrayList<>();
 	private List<Observer<SagaEvent>> observers;
 
+	/**
+	 * Create a new SagaBuilder instance to build a new Saga.
+	 * 
+	 * @return a new SagaBuilder instance.
+	 */
 	public static final SagaBuilder builder()
 	{
 		return new SagaBuilder();
 	}
 
+	/**
+	 * Add a step to the Saga.
+	 * 
+	 * @param step a Step instance to add to the Saga.
+	 * @return this Saga instance.
+	 */
 	public Saga addStep(Step step)
 	{
 		steps.add(step);
 		return this;
 	}
 
+	/**
+	 * Execute the Saga, which will execute each step in order. If any step fails, the Saga will attempt to rollback all
+	 * previous steps using compensation.
+	 * 
+	 * @param context an ExecutionContext instance to pass to each step.
+	 * @throws SagaException if any step fails or if compensation fails.
+	 */
 	public void execute(ExecutionContext context)
 	throws SagaException
 	{
@@ -63,14 +81,55 @@ public class Saga
 			notify(SAGA_COMPENSATED, this, context);
 			throw new SagaException("Failed to execute Saga", e);
 		}
+		finally
+		{
+			cleanup(context, executedSteps);
+		}
 	}
 
+	/**
+	 * Cleanup after the Saga has completed. This method will call cleanup() on each executed step that implements
+	 * Cleanable.
+	 * 
+	 * @param context       an ExecutionContext instance to pass to each step.
+	 * @param executedSteps a List of Step instances that were executed.
+	 */
+	protected void cleanup(ExecutionContext context, List<Step> executedSteps)
+	{
+		// Call cleanup() on each executed step that implements Cleanable.
+		for (Step step : executedSteps) try
+		{
+			if (step instanceof Cleanable cleanable)
+            {
+                cleanable.cleanup(context);
+            }
+		}
+		catch (Exception e)
+		{
+			// Ignore cleanup errors.
+		}
+	}
+
+	/**
+	 * Compensate the Saga, which will rollback all previously executed steps using compensation.
+	 * 
+	 * @param context an ExecutionContext instance to pass to each step.
+	 * @throws SagaException if any compensation fails.
+	 */
 	public void compensate(ExecutionContext context)
 	throws SagaException
 	{
 		compensate(context, steps);
 	}
 
+	/**
+	 * Compensate the Saga, which will rollback all previously executed steps using compensation.
+	 * This method is called by the execute() method if a {@link Step} fails in a {@link Saga}.
+	 * 
+	 * @param context       an ExecutionContext instance to pass to each step.
+	 * @param executedSteps a List of Step instances that were executed.
+	 * @throws SagaException if any compensation fails.
+	 */
 	protected void compensate(ExecutionContext context, List<Step> executedSteps)
 	throws SagaException
 	{
@@ -82,10 +141,10 @@ public class Saga
 
 		for (Step step : reversed) try
 		{
-			if (isCompensatable(step))
+			if (step instanceof CompensatableStep compensatable)
 			{
 				notify(STEP_COMPENSATION_STARTED, this, step, context);
-				((CompensatableStep) step).compensate(context);
+				compensatable.compensate(context);
 				notify(STEP_COMPENSATED, this, step, context);
 			}
 		}
@@ -102,7 +161,13 @@ public class Saga
 		}
 	}
 
-	public void addObserver(Observer<SagaEvent> observer)
+	/**
+	 * Add an observer to the Saga. Observers will be notified of Saga and Step events.
+	 * 
+	 * @param observer an Observer instance to add to the Saga.
+	 * @return this Saga instance.
+	 */
+	public Saga addObserver(Observer<SagaEvent> observer)
 	{
 		if (observers == null)
 		{
@@ -110,38 +175,76 @@ public class Saga
 		}
 
 		observers.add(observer);
+		return this;
 	}
 
-	private boolean isCompensatable(Step step)
-	{
-		return step instanceof CompensatableStep;
-	}
-
+	/**
+	 * Returns true if the Saga has observers. Otherwise, false.
+	 * 
+	 * @return true if the Saga has observers. Otherwise, false.
+	 */
 	private boolean hasObservers()
 	{
 		return observers != null;
 	}
 
+	/**
+	 * Notify all observers of the given event.
+	 * 
+	 * @param event a SagaEvent instance to notify observers of.
+	 */
 	private void notify(SagaEvent event)
 	{
 		observers.forEach(observer -> observer.onEvent(event));
 	}
 
+	/**
+	 * Notify all observers of a step error event.
+	 * 
+	 * @param type a SagaEvent.Type instance.
+	 * @param saga this Saga instance.
+	 * @param step the Step that failed.
+	 * @param context the execution context.
+	 * @param e the Exception that occurred.
+	 */
 	private void notify(SagaEvent.Type type, Saga saga, Step step, ExecutionContext context, Exception e)
 	{
 		if (hasObservers()) notify(new StepErrorEvent(type, saga, step, context, e));		
 	}
 
+	/**
+	 * Notify all observers of a step event.
+	 * 
+	 * @param type a SagaEvent.Type instance.
+	 * @param saga this Saga instance.
+	 * @param step the Step on which the event occurred.
+	 * @param context the execution context.
+	 */
 	private void notify(SagaEvent.Type type, Saga saga, Step step, ExecutionContext context)
 	{
 		if (hasObservers()) notify(new StepEvent(type, saga, step, context));
 	}
 
+	/**
+	 * Notify all observers of a Saga event.
+	 * 
+	 * @param type    a SagaEvent.Type instance.
+	 * @param saga    this Saga instance.
+	 * @param context the execution context.
+	 */
 	private void notify(SagaEvent.Type type, Saga saga, ExecutionContext context)
 	{
 		if (hasObservers()) notify(new SagaEvent(type, saga, context));
 	}
 
+	/**
+	 * Notify all observers of a Saga error event.
+	 * 
+	 * @param type    a SagaEvent.Type instance.
+	 * @param saga    this Saga instance.
+	 * @param context the execution context.
+	 * @param e       the Exception that occurred.
+	 */
 	private void notify(SagaEvent.Type type, Saga saga, ExecutionContext context, Exception e)
 	{
 		if (hasObservers()) notify(new SagaErrorEvent(type, saga, context, e));
