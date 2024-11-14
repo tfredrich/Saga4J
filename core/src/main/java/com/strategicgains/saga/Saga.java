@@ -26,6 +26,7 @@ import com.strategicgains.saga.event.StepEvent;
  * all previous steps using compensation.
  */
 public class Saga
+implements CompensatableStep
 {
 	private List<Step> steps = new ArrayList<>();
 	private List<Observer<SagaEvent>> observers;
@@ -59,6 +60,7 @@ public class Saga
 	 * @param context an ExecutionContext instance to pass to each step.
 	 * @throws SagaException if any step fails or if compensation fails.
 	 */
+	@Override
 	public void execute(ExecutionContext context)
 	throws SagaException
 	{
@@ -116,6 +118,7 @@ public class Saga
 	 * @param context an ExecutionContext instance to pass to each step.
 	 * @throws SagaException if any compensation fails.
 	 */
+	@Override
 	public void compensate(ExecutionContext context)
 	throws SagaException
 	{
