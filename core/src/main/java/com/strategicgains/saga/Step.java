@@ -1,7 +1,7 @@
 package com.strategicgains.saga;
 
 /**
- * A Step is a basic exectue-only step in a Saga. It is responsible for executing a single operation but will
+ * A Step is a basic execute-only step in a Saga. It is responsible for executing a single operation but will
  * not be compensated if the saga fails.
  * 
  * @see Saga
