@@ -5,6 +5,6 @@ extends ContextEvent
 {
 	public <T> ContextCreatedEvent(String key, T value)
 	{
-		super(ContextEventType.CONTEXT_CREATED, key, value);
+		super(Type.CONTEXT_CREATED, key, value);
 	}
 }

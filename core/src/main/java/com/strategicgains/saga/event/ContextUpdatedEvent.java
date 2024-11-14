@@ -7,7 +7,7 @@ extends ContextEvent
 
 	public <T> ContextUpdatedEvent(String key, T value, T before)
 	{
-		super(ContextEventType.CONTEXT_UPDATED, key, value);
+		super(Type.CONTEXT_UPDATED, key, value);
 		this.before = before;
 	}
 

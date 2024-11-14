@@ -9,19 +9,18 @@ import com.strategicgains.saga.event.ContextCreatedEvent;
 import com.strategicgains.saga.event.ContextEvent;
 import com.strategicgains.saga.event.ContextUpdatedEvent;
 
-public class SagaContext
-implements Observable<ContextEvent>
+public class ExecutionContext
 {
-	private SagaContext parent;
+	private ExecutionContext parent;
 	private Map<String, Object> values = new HashMap<>();
 	private List<Observer<ContextEvent>> observers;
 
-	public SagaContext()
+	public ExecutionContext()
 	{
 		super();
 	}
 
-	public SagaContext(SagaContext context)
+	public ExecutionContext(ExecutionContext context)
 	{
 		this();
 		this.parent = context;
@@ -32,7 +31,7 @@ implements Observable<ContextEvent>
 		return parent != null;
 	}
 
-	public SagaContext getParent()
+	public ExecutionContext getParent()
 	{
 		return parent;
 	}
@@ -73,8 +72,7 @@ implements Observable<ContextEvent>
 		return type.cast(getValue(of(namespace, key)));
 	}
 
-	@Override
-	public void addObserver(Observer<ContextEvent> observer)
+	public ExecutionContext addObserver(Observer<ContextEvent> observer)
 	{
 		if (observers == null)
 		{
@@ -82,6 +80,7 @@ implements Observable<ContextEvent>
 		}
 
 		observers.add(observer);
+		return this;
 	}
 
 	private boolean hasObservers()

@@ -11,15 +11,15 @@ package com.strategicgains.saga;
  * - The nested saga is complex and should be encapsulated.
  * - The nested saga should be executed in a different transactional context than the parent saga.
  * - The nested saga requires different observers than the parent saga.
- * - The nested saga should have its own SagaContext (default is to NOT create a new context).
+ * - The nested saga should have its own ExecutionContext (default is to NOT create a new context).
  */
 public class NestedSagaStep
-	implements SagaStep
+implements CompensatableStep
 {
 	private boolean isCompensated = false;
 	private boolean shouldCreateNewContext;
 	private final Saga nestedSaga;
-	private ThreadLocal<SagaContext> nestedContext = new ThreadLocal<>();
+	private ThreadLocal<ExecutionContext> nestedContext = new ThreadLocal<>();
 
 	/**
 	 * Creates a new NestedSagaStep and resuses the parent saga's context.
@@ -45,16 +45,16 @@ public class NestedSagaStep
 
 	/**
 	 * Executes the nested saga. If an exception occurs, the nested saga has already attempted compensation.
-	 * Therefore, subsequent compensation attempts via calling {@link compensate(SagaContext)} will be ignored.
+	 * Therefore, subsequent compensation attempts via calling {@link compensate(ExecutionContext)} will be ignored.
 	 */
 	@Override
-	public void execute(SagaContext context) throws Exception
+	public void execute(ExecutionContext context) throws Exception
 	{
-		SagaContext localContext = context;
+		ExecutionContext localContext = context;
 
 		if (shouldCreateNewContext)
 		{
-			localContext = new SagaContext(context);
+			localContext = new ExecutionContext(context);
 			nestedContext.set(localContext);
 		}
 
@@ -72,7 +72,7 @@ public class NestedSagaStep
 
 	/**
      * The parent saga will attempt compensation for errors that occur during execution of this step or
-     * any subsequent steps. However, if this nested saga has failed during {@link execute(SagaContext)}, it
+     * any subsequent steps. However, if this nested saga has failed during {@link execute(ExecutionContext)}, it
      * has already attempted compensation. Therefore, subsequent compensation attempts will be ignored.
      * 
      * On the other hand, the parent saga can also compensate due to a subsequent step failure. In this
@@ -81,11 +81,11 @@ public class NestedSagaStep
      * @param context the parent saga context. Ignored if a new context was created for the nested saga during execution.
      */
 	@Override
-	public void compensate(SagaContext context) throws Exception
+	public void compensate(ExecutionContext context) throws Exception
 	{
 		if (!isCompensated)
 		{
-			SagaContext localContext = nestedContext.get();
+			ExecutionContext localContext = nestedContext.get();
             nestedContext.remove();
 
 			if (localContext == null)

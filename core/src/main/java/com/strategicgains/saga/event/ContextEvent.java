@@ -2,11 +2,11 @@ package com.strategicgains.saga.event;
 
 public class ContextEvent
 {
-	private ContextEventType type;
+	private Type type;
 	private String key;
 	private Object value;
 
-	protected <T> ContextEvent(ContextEventType type, String key, T value)
+	protected <T> ContextEvent(Type type, String key, T value)
 	{
 		super();
 		this.type = type;
@@ -14,7 +14,7 @@ public class ContextEvent
 		this.value = value;
 	}
 
-	public ContextEventType getType()
+	public Type getType()
 	{
 		return type;
 	}
@@ -32,5 +32,11 @@ public class ContextEvent
 	public <T> T getValue(Class<T> type)
 	{
 		return type.cast(value);
+	}
+
+	public enum Type
+	{
+		CONTEXT_CREATED,
+		CONTEXT_UPDATED
 	}
 }
