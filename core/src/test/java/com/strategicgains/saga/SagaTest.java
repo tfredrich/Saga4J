@@ -15,7 +15,7 @@ class SagaTest
 		TestStep step = new TestStep();
 		saga.addStep(step);
 
-		saga.execute(new ExecutionContext());
+		saga.execute(new SagaContext());
 		assertEquals(1, step.getExecutionCount());
 		assertEquals(0, step.getCompensatedCount());
 	}
@@ -28,7 +28,7 @@ class SagaTest
 		TestStep step = new TestStep();
 		saga.addStep(step);
 
-		saga.compensate(new ExecutionContext());
+		saga.compensate(new SagaContext());
 		assertEquals(0, step.getExecutionCount());
 		assertEquals(1, step.getCompensatedCount());
 	}
@@ -43,7 +43,7 @@ class SagaTest
 			.addStep(step1)
 			.addStep(step2);
 
-		saga.execute(new ExecutionContext());
+		saga.execute(new SagaContext());
 		assertEquals(1, step1.getExecutionCount());
 		assertEquals(1, step2.getExecutionCount());
 		assertEquals(0, step1.getCompensatedCount());
@@ -60,7 +60,7 @@ class SagaTest
 			.addStep(step1)
 			.addStep(step2);
 
-		saga.compensate(new ExecutionContext());
+		saga.compensate(new SagaContext());
 		assertEquals(0, step1.getExecutionCount());
 		assertEquals(0, step2.getExecutionCount());
 		assertEquals(1, step1.getCompensatedCount());
@@ -80,7 +80,7 @@ class SagaTest
 
 		try
 		{
-			saga.execute(new ExecutionContext());
+			saga.execute(new SagaContext());
 		}
 		catch (SagaException e)
 		{
@@ -111,7 +111,7 @@ class SagaTest
 			.build();
 		try
 		{
-			saga.execute(new ExecutionContext());
+			saga.execute(new SagaContext());
 		}
 		catch (SagaException e)
 		{
@@ -144,7 +144,7 @@ class SagaTest
 
 		try
 		{
-			saga.execute(new ExecutionContext());
+			saga.execute(new SagaContext());
 		}
 		catch (SagaException e)
 		{

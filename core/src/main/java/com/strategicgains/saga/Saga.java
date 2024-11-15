@@ -61,7 +61,7 @@ implements CompensatableStep
 	 * @throws SagaException if any step fails or if compensation fails.
 	 */
 	@Override
-	public void execute(ExecutionContext context)
+	public void execute(SagaContext context)
 	throws SagaException
 	{
 		List<Step> executedSteps = new ArrayList<>();
@@ -96,7 +96,7 @@ implements CompensatableStep
 	 * @param context       an ExecutionContext instance to pass to each step.
 	 * @param executedSteps a List of Step instances that were executed.
 	 */
-	protected void cleanup(ExecutionContext context, List<Step> executedSteps)
+	protected void cleanup(SagaContext context, List<Step> executedSteps)
 	{
 		// Call cleanup() on each executed step that implements Cleanable.
 		for (Step step : executedSteps) try
@@ -119,7 +119,7 @@ implements CompensatableStep
 	 * @throws SagaException if any compensation fails.
 	 */
 	@Override
-	public void compensate(ExecutionContext context)
+	public void compensate(SagaContext context)
 	throws SagaException
 	{
 		compensate(context, steps);
@@ -133,7 +133,7 @@ implements CompensatableStep
 	 * @param executedSteps a List of Step instances that were executed.
 	 * @throws SagaException if any compensation fails.
 	 */
-	protected void compensate(ExecutionContext context, List<Step> executedSteps)
+	protected void compensate(SagaContext context, List<Step> executedSteps)
 	throws SagaException
 	{
 		notify(SAGA_COMPENSATION_STARTED, this, context);
@@ -210,7 +210,7 @@ implements CompensatableStep
 	 * @param context the execution context.
 	 * @param e the Exception that occurred.
 	 */
-	private void notify(SagaEvent.Type type, Saga saga, Step step, ExecutionContext context, Exception e)
+	private void notify(SagaEvent.Type type, Saga saga, Step step, SagaContext context, Exception e)
 	{
 		if (hasObservers()) notify(new StepErrorEvent(type, saga, step, context, e));		
 	}
@@ -223,7 +223,7 @@ implements CompensatableStep
 	 * @param step the Step on which the event occurred.
 	 * @param context the execution context.
 	 */
-	private void notify(SagaEvent.Type type, Saga saga, Step step, ExecutionContext context)
+	private void notify(SagaEvent.Type type, Saga saga, Step step, SagaContext context)
 	{
 		if (hasObservers()) notify(new StepEvent(type, saga, step, context));
 	}
@@ -235,7 +235,7 @@ implements CompensatableStep
 	 * @param saga    this Saga instance.
 	 * @param context the execution context.
 	 */
-	private void notify(SagaEvent.Type type, Saga saga, ExecutionContext context)
+	private void notify(SagaEvent.Type type, Saga saga, SagaContext context)
 	{
 		if (hasObservers()) notify(new SagaEvent(type, saga, context));
 	}
@@ -248,7 +248,7 @@ implements CompensatableStep
 	 * @param context the execution context.
 	 * @param e       the Exception that occurred.
 	 */
-	private void notify(SagaEvent.Type type, Saga saga, ExecutionContext context, Exception e)
+	private void notify(SagaEvent.Type type, Saga saga, SagaContext context, Exception e)
 	{
 		if (hasObservers()) notify(new SagaErrorEvent(type, saga, context, e));
 	}

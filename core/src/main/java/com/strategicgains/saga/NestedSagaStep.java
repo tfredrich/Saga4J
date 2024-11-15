@@ -19,7 +19,7 @@ implements CompensatableStep
 	private boolean isCompensated = false;
 	private boolean shouldCreateNewContext;
 	private final Saga nestedSaga;
-	private ThreadLocal<ExecutionContext> nestedContext = new ThreadLocal<>();
+	private ThreadLocal<SagaContext> nestedContext = new ThreadLocal<>();
 
 	/**
 	 * Creates a new NestedSagaStep and resuses the parent saga's context.
@@ -48,13 +48,13 @@ implements CompensatableStep
 	 * Therefore, subsequent compensation attempts via calling {@link compensate(ExecutionContext)} will be ignored.
 	 */
 	@Override
-	public void execute(ExecutionContext context) throws Exception
+	public void execute(SagaContext context) throws Exception
 	{
-		ExecutionContext localContext = context;
+		SagaContext localContext = context;
 
 		if (shouldCreateNewContext)
 		{
-			localContext = new ExecutionContext(context);
+			localContext = new SagaContext(context);
 			nestedContext.set(localContext);
 		}
 
@@ -81,11 +81,11 @@ implements CompensatableStep
      * @param context the parent saga context. Ignored if a new context was created for the nested saga during execution.
      */
 	@Override
-	public void compensate(ExecutionContext context) throws Exception
+	public void compensate(SagaContext context) throws Exception
 	{
 		if (!isCompensated)
 		{
-			ExecutionContext localContext = nestedContext.get();
+			SagaContext localContext = nestedContext.get();
             nestedContext.remove();
 
 			if (localContext == null)

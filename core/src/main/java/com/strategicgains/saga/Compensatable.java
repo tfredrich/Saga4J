@@ -5,6 +5,6 @@ package com.strategicgains.saga;
  */
 public interface Compensatable
 {
-	void compensate(ExecutionContext context)
+	void compensate(SagaContext context)
 	throws Exception;
 }

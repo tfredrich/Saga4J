@@ -8,28 +8,28 @@ import java.util.function.Consumer;
 public class ConsumerStep
 implements CompensatableStep
 {
-	private Consumer<ExecutionContext> execute;
-	private Consumer<ExecutionContext> compensate;
+	private Consumer<SagaContext> execute;
+	private Consumer<SagaContext> compensate;
 
-	public ConsumerStep(Consumer<ExecutionContext> executeConsumer)
+	public ConsumerStep(Consumer<SagaContext> executeConsumer)
 	{
 		this(executeConsumer, null);
 	}
 
-	public ConsumerStep(Consumer<ExecutionContext> executeConsumer, Consumer<ExecutionContext> compensateConsumer)
+	public ConsumerStep(Consumer<SagaContext> executeConsumer, Consumer<SagaContext> compensateConsumer)
 	{
 		this.execute = executeConsumer;
 		this.compensate = compensateConsumer;
 	}
 
 	@Override
-	public void execute(ExecutionContext context) throws Exception
+	public void execute(SagaContext context) throws Exception
 	{
 		execute.accept(context);
 	}
 
 	@Override
-	public void compensate(ExecutionContext context)
+	public void compensate(SagaContext context)
 	throws Exception
 	{
 		if (compensate != null)

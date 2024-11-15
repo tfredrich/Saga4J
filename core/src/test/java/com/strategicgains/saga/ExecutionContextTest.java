@@ -14,12 +14,12 @@ class ExecutionContextTest
 	@Test
 	void shouldSetValues()
 	{
-		ExecutionContext grandParent = new ExecutionContext();
-		ExecutionContext parent = new ExecutionContext(grandParent);
+		SagaContext grandParent = new SagaContext();
+		SagaContext parent = new SagaContext(grandParent);
 		parent.setValue("key", "parent");
 		parent.setValue("namespace", "key", "parent2");
 
-		ExecutionContext context = new ExecutionContext(parent);
+		SagaContext context = new SagaContext(parent);
 		context.setValue("key", "value");
 		assertEquals("value", context.getValue("key"));
 		assertEquals("value", context.getValue("key", String.class));
@@ -40,7 +40,7 @@ class ExecutionContextTest
 	@Test
 	void shouldNotifyObservers()
 	{
-		ExecutionContext context = new ExecutionContext();
+		SagaContext context = new SagaContext();
 		context.addObserver(event ->
 		{
 			if (event.getType() == ContextEvent.Type.CONTEXT_CREATED)

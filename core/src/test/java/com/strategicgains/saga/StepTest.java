@@ -10,7 +10,7 @@ class StepTest
 	void shouldExecute() throws Exception
 	{
 		TestStep step = new TestStep();
-		step.execute(new ExecutionContext());
+		step.execute(new SagaContext());
 		assertEquals(1, step.getExecutionCount());
 		assertEquals(0, step.getCompensatedCount());
 	}
@@ -19,7 +19,7 @@ class StepTest
 	void shouldCompensate() throws Exception
 	{
 		TestStep step = new TestStep();
-		step.compensate(new ExecutionContext());
+		step.compensate(new SagaContext());
 		assertEquals(0, step.getExecutionCount());
 		assertEquals(1, step.getCompensatedCount());
 	}
@@ -28,7 +28,7 @@ class StepTest
 	void shouldPerformConsumer() throws Exception
 	{
 		ConsumerStep step = new ConsumerStep(c -> c.setValue("key", "value"));
-		ExecutionContext context = new ExecutionContext();
+		SagaContext context = new SagaContext();
 		step.execute(context);
 		assertEquals("value", context.getValue("key"));
 	}

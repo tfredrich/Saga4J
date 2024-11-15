@@ -4,8 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<name>Saga4J-HTTP</name>
 	<artifactId>saga4j-http</artifactId>
-	<description>HTTP/REST calling classes for Saga4J, a simple Saga
-		implementation</description>
+	<description>HTTP/REST calling classes for Saga4J, a simple Saga implementation</description>
 
 	<parent>
 		<groupId>com.strategicgains</groupId>

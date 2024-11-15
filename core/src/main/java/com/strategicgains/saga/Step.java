@@ -15,6 +15,6 @@ public interface Step
 	 * @param context The saga execution context.
 	 * @throws Exception
 	 */
-	void execute(ExecutionContext context)
+	void execute(SagaContext context)
 	throws Exception;
 }

@@ -9,18 +9,23 @@ import com.strategicgains.saga.event.ContextCreatedEvent;
 import com.strategicgains.saga.event.ContextEvent;
 import com.strategicgains.saga.event.ContextUpdatedEvent;
 
-public class ExecutionContext
+/**
+ * A Context is a key-value store that can have a parent Context. It is used to
+ * store and retrieve data for a given Saga instance. Contexts can have
+ * Observers that are notified when data is added or updated.
+ */
+public class SagaContext
 {
-	private ExecutionContext parent;
+	private SagaContext parent;
 	private Map<String, Object> values = new HashMap<>();
 	private List<Observer<ContextEvent>> observers;
 
-	public ExecutionContext()
+	public SagaContext()
 	{
 		super();
 	}
 
-	public ExecutionContext(ExecutionContext context)
+	public SagaContext(SagaContext context)
 	{
 		this();
 		this.parent = context;
@@ -31,7 +36,7 @@ public class ExecutionContext
 		return parent != null;
 	}
 
-	public ExecutionContext getParent()
+	public SagaContext getParent()
 	{
 		return parent;
 	}
@@ -72,7 +77,7 @@ public class ExecutionContext
 		return type.cast(getValue(of(namespace, key)));
 	}
 
-	public ExecutionContext addObserver(Observer<ContextEvent> observer)
+	public SagaContext addObserver(Observer<ContextEvent> observer)
 	{
 		if (observers == null)
 		{

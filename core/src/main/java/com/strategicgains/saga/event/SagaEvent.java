@@ -1,15 +1,15 @@
 package com.strategicgains.saga.event;
 
-import com.strategicgains.saga.ExecutionContext;
+import com.strategicgains.saga.SagaContext;
 import com.strategicgains.saga.Saga;
 
 public class SagaEvent
 {
 	private Type type;
 	private Saga saga;
-	private ExecutionContext context;
+	private SagaContext context;
 
-	public SagaEvent(Type type, Saga saga, ExecutionContext context)
+	public SagaEvent(Type type, Saga saga, SagaContext context)
 	{
 		super();
 		this.saga = saga;
@@ -27,7 +27,7 @@ public class SagaEvent
 		return saga;
 	}
 
-	public ExecutionContext getContext()
+	public SagaContext getContext()
 	{
 		return context;
 	}

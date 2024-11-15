@@ -12,5 +12,5 @@ public interface Cleanable
 	 * 
 	 * @param context the ExecutionContext used by the {@link Saga}.
 	 */
-	void cleanup(ExecutionContext context);
+	void cleanup(SagaContext context);
 }
