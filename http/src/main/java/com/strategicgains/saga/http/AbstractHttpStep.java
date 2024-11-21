@@ -6,7 +6,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.strategicgains.saga.Step;
 
-public abstract class HttpStep
+public abstract class AbstractHttpStep
 implements Step
 {
 	private static final String AUTHORIZATION = "Authorization";
@@ -17,12 +17,12 @@ implements Step
 	private String contentType;
 	private boolean useBasicAuth = false;
 
-	protected HttpStep(String url)
+	protected AbstractHttpStep(String url)
 	{
         this(url, DEFAULT_CONTENT_TYPE);
     }
 
-	protected HttpStep(String url, String contentType)
+	protected AbstractHttpStep(String url, String contentType)
 	{
 		this.url = url;
 		this.contentType = contentType;
