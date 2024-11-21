@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<name>Saga4J-Core</name>
 	<artifactId>saga4j-core</artifactId>
-	<description>Shared, common classes for Saga4J, a simple Saga implementation</description>
+	<description>Shared, common classes for Saga4J, the simple Saga implementation for Java</description>
 
 	<parent>
 		<groupId>com.strategicgains</groupId>
