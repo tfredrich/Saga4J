@@ -1,10 +1,9 @@
-package com.strategicgains.saga4j.http;
+package com.strategicgains.saga.http;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.request.GetRequest;
 import com.strategicgains.saga.Step;
 
 public abstract class HttpStep
@@ -51,19 +50,8 @@ implements Step
 	protected HttpResponse<JsonNode> get(String url, String authorization)
 	throws UnirestException
 	{
-		GetRequest request = Unirest.get(url)
-			.header(CONTENT_TYPE, contentType);
-
-		if (authorization != null)
-		{
-			if (useBasicAuth())
-            {
-                request.basicAuth(authorization, "");
-            }
-            else
-            {
-                request.header(AUTHORIZATION, authorization);
-		}
+		return Unirest.get(url)
+			.header(CONTENT_TYPE, contentType)
 			.header(AUTHORIZATION, authorization)
 			.asJson();
 	}
