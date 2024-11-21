@@ -4,11 +4,14 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.request.GetRequest;
+import com.mashape.unirest.request.HttpRequestWithBody;
 import com.strategicgains.saga.Step;
 
 public abstract class AbstractHttpStep
 implements Step
 {
+	private static final String ACCEPT = "Accept";
 	private static final String AUTHORIZATION = "Authorization";
 	private static final String CONTENT_TYPE = "Content-Type";
 	private static final String DEFAULT_CONTENT_TYPE = "application/json";
@@ -33,7 +36,8 @@ implements Step
 		return url;
 	}
 
-	protected String getContentType() {
+	protected String getContentType()
+	{
 		return contentType;
 	}
 
@@ -47,46 +51,74 @@ implements Step
 		this.useBasicAuth = useBasicAuth;
 	}
 
+	protected GetRequest get(String url)
+	{
+		return Unirest.get(url).header(ACCEPT, contentType);
+	}
+
 	protected HttpResponse<JsonNode> get(String url, String authorization)
 	throws UnirestException
 	{
-		return Unirest.get(url)
-			.header(CONTENT_TYPE, contentType)
+		return get(url)
 			.header(AUTHORIZATION, authorization)
 			.asJson();
 	}
 
-	protected HttpResponse<JsonNode> post(String url, String authorization, String body)
+	protected HttpRequestWithBody post(String url, Object body)
+	{
+		HttpRequestWithBody request = Unirest.post(url).header(CONTENT_TYPE, contentType);
+		request.body(body);
+		return request;
+	}
+
+	protected HttpResponse<JsonNode> post(String url, String authorization, Object body)
 	throws UnirestException
 	{
-		return Unirest.post(url)
-			.header(CONTENT_TYPE, contentType)
+		return post(url, body)
 			.header(AUTHORIZATION, authorization)
-			.body(body)
 			.asJson();
 	}
 
-	protected HttpResponse<JsonNode> put(String url, String authorization, String body)
+	protected HttpRequestWithBody put(String url, Object body)
+	{
+		HttpRequestWithBody request = Unirest.put(url).header(CONTENT_TYPE, contentType);
+		request.body(body);
+		return request;
+	}
+
+	protected HttpResponse<JsonNode> put(String url, String authorization, Object body)
 	throws UnirestException
 	{
-		return Unirest.put(url)
-			.header(CONTENT_TYPE, contentType)
+		return put(url, body)
 			.header(AUTHORIZATION, authorization)
-			.body(body).asJson();
+			.asJson();
 	}
+
+	protected HttpRequestWithBody delete(String url)
+    {
+        return Unirest.delete(url).header(CONTENT_TYPE, contentType);
+    }
 
 	protected HttpResponse<JsonNode> delete(String url, String authorization)
 	throws UnirestException
 	{
-		return Unirest.delete(url)
-			.header(CONTENT_TYPE, contentType)
+		return delete(url)
 			.header(AUTHORIZATION, authorization)
 			.asJson();
 	}
 
-	protected HttpResponse<JsonNode> patch(String url, String authorization, String body)
+	protected HttpRequestWithBody patch(String url, Object body)
+	{
+		HttpRequestWithBody request = Unirest.patch(url).header(CONTENT_TYPE, contentType);
+		request.body(body);
+		return request;
+	}
+
+	protected HttpResponse<JsonNode> patch(String url, String authorization, Object body)
 	throws UnirestException
 	{
-		return Unirest.patch(url).header(CONTENT_TYPE, contentType).header(AUTHORIZATION, authorization).body(body).asJson();
+		return patch(url, body)
+			.header(AUTHORIZATION, authorization)
+			.asJson();
 	}
 }
