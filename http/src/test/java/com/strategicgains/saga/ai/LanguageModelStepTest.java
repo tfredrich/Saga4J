@@ -8,7 +8,7 @@ import com.strategicgains.saga.SagaContext;
 
 class LanguageModelStepTest
 {
-	private static final String SAMPLE_PROMPT = "Hello, I'm Todd. Please introduce yourself.";
+	private static final String SAMPLE_PROMPT = "Hello, I'm Jivin' Jake. Please introduce yourself.";
 	private static final String PIRATE_PROMPT_TEMPLATE = "{"
 		+ "  \"model\": \"{{model}}\","
 		+ "  \"messages\": ["
