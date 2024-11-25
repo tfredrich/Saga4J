@@ -64,14 +64,14 @@ implements Step
 			.asJson();
 	}
 
-	protected HttpRequestWithBody post(String url, Object body)
+	protected HttpRequestWithBody post(String url, String body)
 	{
 		HttpRequestWithBody request = Unirest.post(url).header(CONTENT_TYPE, contentType);
 		request.body(body);
 		return request;
 	}
 
-	protected HttpResponse<JsonNode> post(String url, String authorization, Object body)
+	protected HttpResponse<JsonNode> post(String url, String authorization, String body)
 	throws UnirestException
 	{
 		return post(url, body)
@@ -120,5 +120,22 @@ implements Step
 		return patch(url, body)
 			.header(AUTHORIZATION, authorization)
 			.asJson();
+	}
+
+	protected boolean isSuccessful(HttpResponse<?> response)
+	{
+		return response.getStatus() >= 200 && !isRetryable(response) && !isFailed(response);
+	}
+
+	protected boolean isRetryable(HttpResponse<?> response)
+	{
+		int status = response.getStatus();
+		return status == 408 || status == 429 || status == 502 || status == 503 || status == 504;
+	}
+
+	protected boolean isFailed(HttpResponse<?> response)
+	{
+		int status = response.getStatus();
+		return status == 400 || status == 401 || status == 403 || status == 404 || status == 405 || status == 409 || status == 422 || status == 500;
 	}
 }
