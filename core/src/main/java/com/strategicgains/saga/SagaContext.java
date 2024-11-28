@@ -10,7 +10,7 @@ import com.strategicgains.saga.event.ContextEvent;
 import com.strategicgains.saga.event.ContextUpdatedEvent;
 
 /**
- * A Context is a key-value store that can have a parent Context. It is used to
+ * A SagaContext is a key-value store that can have a parent Context. It is used to
  * store and retrieve data for a given Saga instance. Contexts can have
  * Observers that are notified when data is added or updated.
  */
