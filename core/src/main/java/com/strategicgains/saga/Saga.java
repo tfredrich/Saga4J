@@ -30,6 +30,7 @@ implements CompensatableStep
 {
 	private List<Step> steps = new ArrayList<>();
 	private List<Observer<SagaEvent>> observers;
+	private boolean compensated = false;
 
 	/**
 	 * Create a new SagaBuilder instance to build a new Saga.
@@ -70,10 +71,9 @@ implements CompensatableStep
 
 		for (Step step : steps) try
 		{
-			executedSteps.add(step);
-
 			notify(STEP_STARTED, this, step, context);
 			step.execute(context);
+			executedSteps.add(step);
 			notify(STEP_COMPLETED, this, step, context);
 		}
 		catch (Exception e)
@@ -87,6 +87,16 @@ implements CompensatableStep
 		{
 			cleanup(context, executedSteps);
 		}
+	}
+
+	/**
+	 * Reflects whether compensation was incurred. Does not indicate success.
+	 * 
+	 * @return true if compensation was attempted.
+	 */
+	public boolean isCompensated()
+	{
+		return compensated;
 	}
 
 	/**
@@ -113,7 +123,7 @@ implements CompensatableStep
 	}
 
 	/**
-	 * Compensate the Saga, which will rollback all previously executed steps using compensation.
+	 * Compensate the Saga, which will rollback all steps using compensation.
 	 * 
 	 * @param context an ExecutionContext instance to pass to each step.
 	 * @throws SagaException if any compensation fails.
@@ -136,8 +146,11 @@ implements CompensatableStep
 	protected void compensate(SagaContext context, List<Step> executedSteps)
 	throws SagaException
 	{
+		if (isCompensated()) return;
+
 		notify(SAGA_COMPENSATION_STARTED, this, context);
 
+		this.compensated = true;
 		List<Step> reversed = new ArrayList<>(executedSteps);
 		Collections.reverse(reversed);
 		List<Exception> errors = new ArrayList<>();
