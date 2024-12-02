@@ -64,7 +64,8 @@ public class Conversation {
 
 	public Message getLastMessage()
 	{
-		return messages.getLast();
+//		JDK 21: return messages.getLast();
+        return (messages != null && !messages.isEmpty() ? messages.get(messages.size() - 1) : null);
 	}
 
 	public class Message
