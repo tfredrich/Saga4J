@@ -34,7 +34,7 @@ class LanguageModelStepTest
 		context.setValue("prompt", SAMPLE_PROMPT);
 		step.execute(context);
 		assertNotNull(context.getValue(OllamaChatStep.RESPONSE));
-		System.out.println(context.getValue(OllamaChatStep.RESPONSE));
+		System.out.println("Ollama response: " + context.getValue(OllamaChatStep.RESPONSE));
 	}
 
 	@Test
@@ -49,6 +49,6 @@ class LanguageModelStepTest
 		context.setValue("prompt", SAMPLE_PROMPT);
 		step.execute(context);
 		assertNotNull(context.getValue(LmStudioChatStep.RESPONSE));
-		System.out.println(context.getValue(LmStudioChatStep.RESPONSE));
+		System.out.println("LM Studio Response: " + context.getValue(LmStudioChatStep.RESPONSE));
 	}
 }
