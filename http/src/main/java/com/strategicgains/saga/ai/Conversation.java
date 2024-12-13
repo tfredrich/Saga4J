@@ -9,7 +9,7 @@ import java.util.List;
 public class Conversation {
 	private String model;
 	private List<Message> messages = new ArrayList<>();
-	private Boolean stream;
+	private boolean stream;
 
 	public Conversation()
 	{
@@ -35,7 +35,7 @@ public class Conversation {
 
 	public Conversation shouldStream(boolean value)
 	{
-		this.stream = Boolean.valueOf(value);
+		this.stream = value;
 		return this;
 	}
 

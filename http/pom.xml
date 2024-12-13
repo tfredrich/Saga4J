@@ -18,10 +18,18 @@
             <artifactId>saga4j-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-			<groupId>com.mashape.unirest</groupId>
-            <artifactId>unirest-java</artifactId>
-            <version>1.4.9</version>
-        </dependency>
+		<!-- https://mvnrepository.com/artifact/com.konghq/unirest-java-core -->
+		<dependency>
+		    <groupId>com.konghq</groupId>
+		    <artifactId>unirest-java-core</artifactId>
+		    <version>4.4.5</version>
+		    <scope>provided</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.konghq/unirest-modules-gson -->
+		<dependency>
+		    <groupId>com.konghq</groupId>
+		    <artifactId>unirest-modules-gson</artifactId>
+		    <version>4.4.5</version>
+		</dependency>
 	</dependencies>
 </project>

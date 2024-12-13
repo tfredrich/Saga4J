@@ -1,12 +1,13 @@
 package com.strategicgains.saga.http;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.request.GetRequest;
-import com.mashape.unirest.request.HttpRequestWithBody;
 import com.strategicgains.saga.Step;
+
+import kong.unirest.core.GetRequest;
+import kong.unirest.core.HttpRequestWithBody;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.JsonNode;
+import kong.unirest.core.Unirest;
+import kong.unirest.core.UnirestException;
 
 public abstract class AbstractHttpStep
 implements Step
@@ -64,14 +65,14 @@ implements Step
 			.asJson();
 	}
 
-	protected HttpRequestWithBody post(String url, String body)
+	protected HttpRequestWithBody post(String url, Object body)
 	{
 		HttpRequestWithBody request = Unirest.post(url).header(CONTENT_TYPE, contentType);
 		request.body(body);
 		return request;
 	}
 
-	protected HttpResponse<JsonNode> post(String url, String authorization, String body)
+	protected HttpResponse<JsonNode> post(String url, String authorization, Object body)
 	throws UnirestException
 	{
 		return post(url, body)

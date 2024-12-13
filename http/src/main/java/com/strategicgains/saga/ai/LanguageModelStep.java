@@ -1,16 +1,16 @@
 package com.strategicgains.saga.ai;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
 import com.strategicgains.saga.SagaContext;
 import com.strategicgains.saga.http.AbstractHttpStep;
 
-public class LanguageModelStep
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.JsonNode;
+import kong.unirest.core.json.JSONObject;
+
+public abstract class LanguageModelStep
 extends AbstractHttpStep
 {
-	protected static final String LLM_RESPONSE = "llmResponse";
-	private static final String PROMPT_REGEX = "{{prompt}}";
-	private static final String MODEL_REGEX = "{{model}}";
+	protected static final String CONVERSATION = "conversation";
 	private ChatConfiguration config;
 
 	protected LanguageModelStep(ChatConfiguration config)
@@ -27,20 +27,19 @@ extends AbstractHttpStep
 	@Override
 	public void execute(SagaContext context) throws Exception
 	{
-		String prompt = context.getValue("prompt", String.class);
-		assert prompt != null;
-		String body = config.getPromptTemplateJson()
-			.replace(MODEL_REGEX, config.getModel())
-			.replace(PROMPT_REGEX, prompt);
-		HttpResponse<JsonNode> response = post(config.getInferenceUrl(), body).asJson();
+		Conversation conversation = context.getValue(CONVERSATION, Conversation.class);
+		assert conversation != null;
+		HttpResponse<JsonNode> response = post(config.getInferenceUrl(), conversation).asJson();
 
 		if (isSuccessful(response))
 		{
-			context.setValue(LLM_RESPONSE, response.getBody().getObject());
+			updateConversation(context, response.getBody().getObject());
 		}
 		else
 		{
 			throw new Exception("Failed to get response from language model: " + response.getBody().toString());
 		}
 	}
+
+	protected abstract void updateConversation(SagaContext context, JSONObject response);
 }

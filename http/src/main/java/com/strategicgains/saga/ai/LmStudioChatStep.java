@@ -1,14 +1,12 @@
 package com.strategicgains.saga.ai;
 
-import org.json.JSONObject;
-
 import com.strategicgains.saga.SagaContext;
+
+import kong.unirest.core.json.JSONObject;
 
 public class LmStudioChatStep
 extends LanguageModelStep
 {
-	protected static final String RESPONSE = "lmStudioResponse";
-
 	public LmStudioChatStep()
 	{
 		this(new LmStudioChatConfig());
@@ -19,18 +17,10 @@ extends LanguageModelStep
 		super(config);
 	}
 
-	public LmStudioChatStep withModel(String model)
-	{
-		withModel(model);
-		return this;
-	}
-
 	@Override
-	public void execute(SagaContext context)
-	throws Exception
+	protected void updateConversation(SagaContext context, JSONObject response)
 	{
-		super.execute(context);
-		JSONObject response = context.getValue(LanguageModelStep.LLM_RESPONSE, JSONObject.class);
-		context.setValue(RESPONSE, response.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content"));
+		Conversation conversation = context.getValue(LanguageModelStep.CONVERSATION, Conversation.class);
+        conversation.withAssistant(response.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content"));
 	}
 }
